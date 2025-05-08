@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 // import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -40,11 +40,16 @@ export function PortfolioOverview() {
     .filter((token) => token.value < 1.0)
     .reduce((sum, token) => sum + token.value, 0)
 
+  useEffect(() => {
+    setIsAllSelected(
+        filteredTokens.length > 0 && selectedTokens.length === filteredTokens.length
+      );
+  }, [selectedTokens]);
+
   function handleSelectChange(checked: string | boolean, token: Token) {
+    console.log(token)
     if (checked) {
-      setselectedTokens(prev => ({
-        ...prev, token
-      }))
+      setselectedTokens(prev => [ ...prev, token ])
     } else {
       setselectedTokens(prev => {
         if (prev.some(data => data.name == token.name)) {
@@ -59,18 +64,22 @@ export function PortfolioOverview() {
   const handleSelectAllChange = useCallback((checked: 
    boolean) => {
     if (checked) {
-      const allValues = filteredTokens.map((token) => token.value);
-      // handleSelectAllChange(allValues)
-      console.log(allValues)
+      filteredTokens.map((token) => {
+        handleSelectChange(checked, token)
+      });
     } else {
-      // handleSelectChange([])
+      setselectedTokens([])
     }
   }, [filteredTokens])
 
-  const isTokenSelected = (tokens: Token[], name: string) => {
-    console.log(selectedTokens)
-    return true
+  const isTokenSelected = (name: string) => {
+    if (Array.isArray(selectedTokens)) {
+      return selectedTokens.some(token => token.name == name)
+    }
+    return false
   };
+
+  console.log(isAllSelected)
 
   return (
     <Card>
@@ -138,8 +147,9 @@ export function PortfolioOverview() {
                   </div>
                   <div>
                     <Checkbox 
-                      checked={isTokenSelected(selectedTokens, token.name)}
+                      checked={isTokenSelected(token.name)}
                       onCheckedChange={(checked) => handleSelectChange(checked, token)}
+                      className="cursor-pointer"
                     />
                   </div>
                 </div>

@@ -20,7 +20,6 @@ export function DashboardHeader() {
       </div>
         <div className="flex items-center gap-4">
           <appkit-button />
-          <ActionButton />
         </div>
       </div>
     </header>
