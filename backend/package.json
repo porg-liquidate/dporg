@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@solana/spl-token": "^0.4.13",
+    "@supabase/supabase-js": "^2.49.4",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1"
+  }
+}
