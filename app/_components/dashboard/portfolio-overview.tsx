@@ -39,12 +39,35 @@ export function PortfolioOverview() {
     .filter((token) => token.value < 1.0)
     .reduce((sum, token) => sum + token.value, 0)
 
-  const isAllSelected = filteredTokens.length > 0 && 
-      selectedTokens.length === filteredTokens.length
+  let isAllSelected = filteredTokens.length > 0 && 
+    selectedTokens.length === filteredTokens.length
+
+  const handleSelectAllChange = useCallback((checked: 
+    boolean) => {
+      if (checked) {
+        filteredTokens.map((token) => {
+          handleSelectChange(checked, token)
+        });
+      } else {
+        setselectedTokens([])
+      }
+  }, [filteredTokens])
+
+  useEffect(() => {
+    if (view == "dust") {
+      setselectedTokens(prev => prev.filter((token) => token.value < 1.0))
+      isAllSelected = filteredTokens.length == selectedTokens.length
+      console.log('view', selectedTokens)
+    }
+  }, [view])
 
   function handleSelectChange(checked: string | boolean, token: Token) {
     if (checked) {
-      setselectedTokens(prev => [ ...prev, token ])
+      setselectedTokens(prev => { 
+        return prev.some(t => t.name == token.name) 
+          ? prev 
+          : [...prev, token] 
+        })
     } else {
       setselectedTokens(prev => {
         if (prev.some(data => data.name == token.name)) {
@@ -56,17 +79,6 @@ export function PortfolioOverview() {
     }
   }
 
-  const handleSelectAllChange = useCallback((checked: 
-   boolean) => {
-    if (checked) {
-      filteredTokens.map((token) => {
-        handleSelectChange(checked, token)
-      });
-    } else {
-      setselectedTokens([])
-    }
-  }, [filteredTokens])
-
   const isTokenSelected = (name: string) => {
     if (Array.isArray(selectedTokens)) {
       return selectedTokens.some(token => token.name == name)
@@ -74,7 +86,7 @@ export function PortfolioOverview() {
     return false
   };
 
-  console.log(isAllSelected)
+  console.log(isAllSelected, selectedTokens)
 
   return (
     <Card>

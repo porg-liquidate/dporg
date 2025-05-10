@@ -45,7 +45,7 @@ export function LiquidateCard() {
       <CardContent className="space-y-4">
       <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="target-token">Target Token</Label>
+            <Label htmlFor="target-token" className="text-white/90">Target Token</Label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -73,7 +73,7 @@ export function LiquidateCard() {
                 checked={isDestinationExternal}
                 onCheckedChange={() => setIsDestinationExternal(prev => !prev)}
               />
-              <Label>Choose different destination wallet</Label>
+              <Label className="text-white/90">Choose different destination wallet</Label>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export function LiquidateCard() {
               name='desination-wallet'
               value={destinationWallet ?? ''}
               placeholder='0x38339...YHh3738j'
-              className="text-white/90 px-3 focus:outline-0 border border-secondary/90 w-full h-[2.5rem] rounded-md cursor-pointer"
+              className="text-white/90 px-3 focus:outline-0 border border-secondary/90 w-full h-[2.5rem] rounded-md"
               onChange={(e) => setDestinationWallet(e.target.value)}
             />
           </div>
