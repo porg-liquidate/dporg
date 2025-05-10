@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { ArrowRightLeft, ExternalLink, HelpCircle, Zap } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Checkbox } from "@/components/ui/checkbox"
 // import { useToast } from "@/hooks/use-toast"
 
 export function LiquidateCard() {
@@ -17,6 +18,8 @@ export function LiquidateCard() {
   const [bridgeEnabled, setBridgeEnabled] = useState(false)
   const [targetChain, setTargetChain] = useState("ethereum")
   const [isLoading, setIsLoading] = useState(false)
+  const [isDestinationExternal, setIsDestinationExternal] = useState(false)
+  const [destinationWallet, setDestinationWallet] = useState<string | null>(null)
 //   const { toast } = useToast()
 
   const handleLiquidate = async () => {
@@ -40,7 +43,7 @@ export function LiquidateCard() {
         <CardDescription>Convert all tokens to a single asset</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
+      <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="target-token">Target Token</Label>
             <TooltipProvider>
@@ -54,17 +57,39 @@ export function LiquidateCard() {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <Select value={targetToken} onValueChange={setTargetToken}>
-            <SelectTrigger id="target-token" className="border border-secondary/10 text-secondary">
-              <SelectValue placeholder="Select token" className="text-secondary" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="usdc">USDC</SelectItem>
-              <SelectItem value="sol">SOL</SelectItem>
-              <SelectItem value="usdt">USDT</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-x-6 items-center">
+            <Select value={targetToken} onValueChange={setTargetToken}>
+              <SelectTrigger id="target-token" className="border border-secondary/10 text-secondary">
+                <SelectValue placeholder="Select token" className="text-secondary" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="usdc">USDC</SelectItem>
+                <SelectItem value="sol">SOL</SelectItem>
+                <SelectItem value="usdt">USDT</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className='flex items-center gap-x-2'>
+              <Checkbox 
+                checked={isDestinationExternal}
+                onCheckedChange={() => setIsDestinationExternal(prev => !prev)}
+              />
+              <Label>Choose different destination wallet</Label>
+            </div>
+          </div>
         </div>
+
+        {isDestinationExternal && (
+          <div>
+            <input 
+              type='text' 
+              name='desination-wallet'
+              value={destinationWallet ?? ''}
+              placeholder='0x38339...YHh3738j'
+              className="text-white/90 px-3 focus:outline-0 border border-secondary/90 w-full h-[2.5rem] rounded-md cursor-pointer"
+              onChange={(e) => setDestinationWallet(e.target.value)}
+            />
+          </div>
+        )}
 
         <div className="flex items-center justify-between space-x-2">
           <div className="space-y-0.5">

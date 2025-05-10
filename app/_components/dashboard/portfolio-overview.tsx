@@ -29,7 +29,6 @@ const portfolioData = {
 
 export function PortfolioOverview() {
   const [view, setView] = useState("all")
-  const [isAllSelected, setIsAllSelected] = useState(false);
   const [selectedTokens, setselectedTokens] = useState<Token[]>([]);
 
   // Filter tokens based on view
@@ -40,14 +39,10 @@ export function PortfolioOverview() {
     .filter((token) => token.value < 1.0)
     .reduce((sum, token) => sum + token.value, 0)
 
-  useEffect(() => {
-    setIsAllSelected(
-        filteredTokens.length > 0 && selectedTokens.length === filteredTokens.length
-      );
-  }, [selectedTokens]);
+  const isAllSelected = filteredTokens.length > 0 && 
+      selectedTokens.length === filteredTokens.length
 
   function handleSelectChange(checked: string | boolean, token: Token) {
-    console.log(token)
     if (checked) {
       setselectedTokens(prev => [ ...prev, token ])
     } else {
