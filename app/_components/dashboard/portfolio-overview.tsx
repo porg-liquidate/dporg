@@ -44,7 +44,7 @@ export function PortfolioOverview() {
     (async () => {
       if (chain == null || address == null) return
       if (chain == "solana") {
-        const assets = await fetchAssetsMetadata(connection, "6wRCEa63ksmFY4T6MVpQ7qKEe7fJATPyA2y12rnJTo1B")
+        const assets = await fetchAssetsMetadata(connection, address)
         setPortfolioTokens(assets)
       } else if (chain == "ethereum") {
 

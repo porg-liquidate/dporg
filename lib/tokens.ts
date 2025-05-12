@@ -30,10 +30,14 @@ async function fetchAssetData(connection: Connection, address: string) {
 }
 
 async function getMetadata(uri: string) {
-    if (uri != undefined) {
-        const response = await fetch(uri);
-        const data = await response.json();
-        return data
+    try {
+        if (uri != undefined) {
+            const response = await fetch(uri);
+            const data = await response.json();
+            return data
+        }
+    } catch (error) {
+        console.log(error, uri)
     }
 }
 
@@ -47,7 +51,7 @@ export async function fetchAssetsMetadata(connection: Connection, address: strin
         const tokenAccount = getAssociatedTokenAddressSync(new PublicKey(asset.publicKey), new PublicKey(address))
         const tokenInfo = await connection.getTokenAccountBalance(tokenAccount)
         const tokenPrice = await getTokenPrice(asset.publicKey.toString())
-        const percentage = ((tokenPrice.usdPrice - tokenPrice.usdPrice24h) / tokenPrice.usdPrice24h)
+        const percentage = ((tokenPrice?.usdPrice - tokenPrice?.usdPrice24h) / tokenPrice?.usdPrice24h)
         tokens.push({
             decimals: asset.decimals,
             mint: asset.publicKey,
@@ -55,8 +59,8 @@ export async function fetchAssetsMetadata(connection: Connection, address: strin
             symbol: data.metadata.symbol,
             image: metadata?.image ?? '',
             balance: tokenInfo.value.uiAmount ?? 0,
-            value: tokenPrice.usdPrice,
-            percentage: percentage
+            value: tokenPrice?.usdPrice ?? 0,
+            percentage: percentage ?? 0.00
         })
     }
     return tokens
