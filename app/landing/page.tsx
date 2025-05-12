@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import logo from "@/public/images/lightlogo.png";
 import Image from "next/image";
 
-export default function Page() {
+export default function Landing() {
   return (
     <section className="relative flex flex-col justify-center items-center overflow-hidden bg-black w-full lg:h-screen p-4">
       <header className="relative w-full border-b border-secondary/10 mb-2 h-20 lg:h-auto">
@@ -39,12 +39,12 @@ export default function Page() {
           </div>
           <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-8">
             <div className="flex flex-col items-center">
-              <p className="text-3xl font-bold text-secondary">$1</p>
+              <p className="text-3xl font-bold text-secondary">1%</p>
               <p className="text-sm text-muted-foreground">Average Fee</p>
             </div>
             <div className="h-10 w-px bg-border" />
             <div className="flex flex-col items-center">
-              <p className="text-3xl font-bold text-secondary">1 Second</p>
+              <p className="text-3xl font-bold text-secondary">... Second</p>
               <p className="text-sm text-muted-foreground">Transaction Time</p>
             </div>
             <div className="h-10 w-px bg-border" />

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { headers } from 'next/headers' 
+import { headers } from "next/headers";
 import ContextProvider from "@/context";
 
 export const metadata: Metadata = {
@@ -8,13 +8,16 @@ export const metadata: Metadata = {
   description: "Your One Click Wallet Liquidation",
 };
 
+// Mark the layout as dynamic
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const headersData = await headers();
-  const cookies = headersData.get('cookie');
+  const cookies = headersData.get("cookie");
 
   return (
     <html lang="en" data-nighteye="disabled">
