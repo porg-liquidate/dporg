@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 // import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { InfoIcon, Wallet2 } from "lucide-react"
+import { Coins, InfoIcon, Wallet2 } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import useWallet from "@/hooks/useWallet"
 import { fetchAssetsMetadata } from "@/lib/tokens"
@@ -120,37 +120,46 @@ export function PortfolioOverview({
             </div>
           ): (
             <>
-              {filteredTokens.map((token) => (
-                <div key={token.symbol} className="space-y-2 border-b border-white/10 pb-4 last:border-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                        <img src={token.image} className='rounded-full w-5 h-5 object-cover' />
-                      </div>
-                      <div>
-                        <p className="font-medium text-secondary">{token.name}</p>
-                        <p className="text-xs text-white/70">
-                          {token.balance.toLocaleString()} {token.symbol}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-x-3">
-                      <div className="text-right">
-                        <p className="font-medium text-secondary">${token.value.toFixed(5)}</p>
-                        <p className="text-xs text-white/70">{token.percentage.toFixed(3)}%</p>
-                      </div>
-                      <div>
-                        <Checkbox 
-                          checked={isTokenSelected(token.name)}
-                          onCheckedChange={(checked) => handleSelectChange(checked, token)}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* <Progress value={token.percentage} className="h-1.5 border border-white/10" /> */}
+              {filteredTokens.length == 0 ? (
+                <div className='py-12 flex flex-col items-center gap-y-3'>
+                  <Coins className='stroke-white/70 w-12 h-12' />
+                  <h3 className='text-white/90 text-center'>You do not have any tokens in your portfolio</h3>
                 </div>
-              ))}
+              ): (
+                <>
+                  {filteredTokens.map((token) => (
+                    <div key={token.symbol} className="space-y-2 border-b border-white/10 pb-4 last:border-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                            <img src={token.image} className='rounded-full w-5 h-5 object-cover' />
+                          </div>
+                          <div>
+                            <p className="font-medium text-secondary">{token.name}</p>
+                            <p className="text-xs text-white/70">
+                              {token.balance.toLocaleString()} {token.symbol}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-x-3">
+                          <div className="text-right">
+                            <p className="font-medium text-secondary">${token.value.toFixed(5)}</p>
+                            <p className="text-xs text-white/70">{token.percentage.toFixed(3)}%</p>
+                          </div>
+                          <div>
+                            <Checkbox 
+                              checked={isTokenSelected(token.name)}
+                              onCheckedChange={(checked) => handleSelectChange(checked, token)}
+                              className="cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* <Progress value={token.percentage} className="h-1.5 border border-white/10" /> */}
+                    </div>
+                  ))}
+                </>
+              )}
             </>
           )}
         </div>
