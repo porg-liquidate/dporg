@@ -8,8 +8,6 @@ import { fetchTokenAssetsMetadata } from "@/lib/tokens"
 import { Connection } from "@solana/web3.js"
 import useWallet from "@/hooks/useWallet"
 import { Token } from "@/lib/types"
-import { useQuery } from "@tanstack/react-query"
-import { apiHealth } from "@/lib/api/health"
 
 export default function DashboardPage() {
   const [chain, setChain] = useState<string | null>(null)
@@ -33,7 +31,7 @@ export default function DashboardPage() {
       console.log(chain, address)
       if (chain == null || address == null) return
       if (chain == "solana") {
-        const assets = await fetchTokenAssetsMetadata(connection, "3qeKeVSDbWZTtZVdzTR3qamWVvuhpcFPeStTvrQH3oFi")
+        const assets = await fetchTokenAssetsMetadata(connection, address)
         setPortfolioTokens(assets)
       } else if (chain == "ethereum") {
 
@@ -45,14 +43,18 @@ export default function DashboardPage() {
     fetchTokens()
   }, [fetchTokens])
 
-  console.log(portfolioTokens)
-
   const isTokenSelected = (mint: string) => {
     if (Array.isArray(selectedTokens)) {
       return selectedTokens.some(token => token.mint == mint)
     }
     return false
   };
+
+  useEffect(() => {
+    if (portfolioTokens.length == 0) {
+      setSelectedTokens([])
+    }
+  }, [portfolioTokens])
 
   function handleSelectChange(checked: string | boolean, token: Token) {
     if (checked) {
