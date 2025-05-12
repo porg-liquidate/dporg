@@ -10,9 +10,14 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowRightLeft, ExternalLink, HelpCircle, Zap } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Token } from "@/lib/types"
 // import { useToast } from "@/hooks/use-toast"
 
-export function LiquidateCard() {
+interface LiquidateCardProp {
+  selectedTokens: Token[],
+}
+
+export function LiquidateCard({ selectedTokens }: LiquidateCardProp) {
   const [targetToken, setTargetToken] = useState("usdc")
   const [includeDust, setIncludeDust] = useState(true)
   const [bridgeEnabled, setBridgeEnabled] = useState(false)

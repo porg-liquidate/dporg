@@ -10,51 +10,28 @@ import { Checkbox } from "@/components/ui/checkbox"
 import useWallet from "@/hooks/useWallet"
 import { fetchAssetsMetadata } from "@/lib/tokens"
 import { Connection } from "@solana/web3.js"
+import { Token } from "@/lib/types"
 
-type Token = {
-  name: string,
-  symbol: string,
-  value: number,
-  balance: number,
-  image: string,
-  mint: string,
-  decimals: number,
-  percentage: number,
+interface PortfolioOverviewProp {
+  chain: string | null,
+  address: string | null,
+  selectedTokens: Token[];
+  portfolioTokens: Token[];
+  isTokenSelected: (name: string) => boolean;
+  handleSelectChange: (checked: string | boolean, token: Token) => void;
+  setSelectedTokens: (tokens: Token[]) => void;
 }
 
-export function PortfolioOverview() {
+export function PortfolioOverview({ 
+  chain,
+  address,
+  portfolioTokens, 
+  selectedTokens, 
+  isTokenSelected,
+  handleSelectChange,
+  setSelectedTokens 
+}: PortfolioOverviewProp) {
   const [view, setView] = useState("all")
-  const [chain, setChain] = useState<string | null>(null)
-  const [address, setAddress] = useState<string | null>(null)
-  const [selectedTokens, setselectedTokens] = useState<Token[]>([]);
-  const [portfolioTokens, setPortfolioTokens] = useState<Token[]>([])
-
-  const {address: walletAddress, state, mounted} = useWallet()
-  const connection = new Connection(process.env.NEXT_PUBLIC_HELIUS_RPC as string);
-
-  useMemo(() => {
-    if (state && mounted) {
-      setAddress(walletAddress as string)
-      setChain(state.activeChain as string)
-    }
-  }, [mounted, walletAddress, state])
-
-  // fetch tokens for connected chains
-  const fetchTokens = useCallback(() => {
-    (async () => {
-      if (chain == null || address == null) return
-      if (chain == "solana") {
-        const assets = await fetchAssetsMetadata(connection, address)
-        setPortfolioTokens(assets)
-      } else if (chain == "ethereum") {
-
-      }
-    })()
-  }, [chain, address])
-
-  useEffect(() => {
-    fetchTokens()
-  }, [fetchTokens])
 
   // calculate tokens total usd price
   const totalPrices = portfolioTokens.reduce((sum, token) => sum + token?.value, 0)
@@ -77,41 +54,19 @@ export function PortfolioOverview() {
           handleSelectChange(checked, token)
         });
       } else {
-        setselectedTokens([])
+        setSelectedTokens([])
       }
   }, [filteredTokens])
 
   useEffect(() => {
     if (view == "dust") {
-      setselectedTokens(prev => prev.filter((token) => token.value < 1.0))
+      const filtered = filteredTokens.filter((token) => token.value < 1.0)
+      setSelectedTokens(filtered)
       isAllSelected = filteredTokens.length == selectedTokens.length
     }
   }, [view])
 
-  function handleSelectChange(checked: string | boolean, token: Token) {
-    if (checked) {
-      setselectedTokens(prev => { 
-        return prev.some(t => t.name == token.name) 
-          ? prev 
-          : [...prev, token] 
-        })
-    } else {
-      setselectedTokens(prev => {
-        if (prev.some(data => data.name == token.name)) {
-          return prev.filter(t => t.name != token.name)
-        } else {
-          return [...prev, token]
-        }
-      })
-    }
-  }
-
-  const isTokenSelected = (name: string) => {
-    if (Array.isArray(selectedTokens)) {
-      return selectedTokens.some(token => token.name == name)
-    }
-    return false
-  };
+  
 
   return (
     <Card>
