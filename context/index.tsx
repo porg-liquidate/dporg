@@ -10,7 +10,7 @@ const queryClient = new QueryClient()
 const metadata = {
   name: 'porg',
   description: 'AppKit Example',
-  url: 'https://reown.com/appkit', // origin must match your domain & subdomain
+  url: 'http://localhost:3000/board', // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png']
 }
 
@@ -29,7 +29,9 @@ function ContextProvider({ children, cookies }: { children: React.ReactNode, coo
 
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
     </WagmiProvider>
     )
 }

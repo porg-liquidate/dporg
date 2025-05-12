@@ -39,7 +39,7 @@ export default function Page() {
           </div>
           <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-8">
             <div className="flex flex-col items-center">
-              <p className="text-3xl font-bold text-secondary">$0.0001</p>
+              <p className="text-3xl font-bold text-secondary">$1</p>
               <p className="text-sm text-muted-foreground">Average Fee</p>
             </div>
             <div className="h-10 w-px bg-border" />

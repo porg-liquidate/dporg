@@ -10,9 +10,15 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowRightLeft, ExternalLink, HelpCircle, Zap } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Token } from "@/lib/types"
 // import { useToast } from "@/hooks/use-toast"
 
-export function LiquidateCard() {
+interface LiquidateCardProp {
+  chain: string | null,
+  selectedTokens: Token[],
+}
+
+export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
   const [targetToken, setTargetToken] = useState("usdc")
   const [includeDust, setIncludeDust] = useState(true)
   const [bridgeEnabled, setBridgeEnabled] = useState(false)
@@ -22,18 +28,28 @@ export function LiquidateCard() {
   const [destinationWallet, setDestinationWallet] = useState<string | null>(null)
 //   const { toast } = useToast()
 
-  const handleLiquidate = async () => {
-    setIsLoading(true)
+  const totalAmount = selectedTokens.reduce((sum, token) => sum + token?.value, 0)
+  const fee = totalAmount * 0.1
 
-    // Simulate transaction processing
-    setTimeout(() => {
+  const handleLiquidate = async () => {
+    try {
+      setIsLoading(true)
+
+      // Simulate transaction processing
+      setTimeout(() => {
+        setIsLoading(false)
+        // toast({
+        //   title: "Liquidation Successful",
+        //   description: "All tokens have been converted to USDC",
+        //   duration: 5000,
+        // })
+      }, 2000)
+
+    } catch(error) {
+
+    } finally {
       setIsLoading(false)
-    //   toast({
-    //     title: "Liquidation Successful",
-    //     description: "All tokens have been converted to USDC",
-    //     duration: 5000,
-    //   })
-    }, 2000)
+    }
   }
 
   return (
@@ -64,7 +80,7 @@ export function LiquidateCard() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="usdc">USDC</SelectItem>
-                <SelectItem value="sol">SOL</SelectItem>
+                <SelectItem value="sol">PYUSD</SelectItem>
                 <SelectItem value="usdt">USDT</SelectItem>
               </SelectContent>
             </Select>
@@ -73,7 +89,7 @@ export function LiquidateCard() {
                 checked={isDestinationExternal}
                 onCheckedChange={() => setIsDestinationExternal(prev => !prev)}
               />
-              <Label className="text-white/90">Choose different destination wallet</Label>
+              <Label className="text-white/90 text-xs">Choose different destination wallet</Label>
             </div>
           </div>
         </div>
@@ -84,7 +100,7 @@ export function LiquidateCard() {
               type='text' 
               name='desination-wallet'
               value={destinationWallet ?? ''}
-              placeholder='0x38339...YHh3738j'
+              placeholder='solana address'
               className="text-white/90 px-3 focus:outline-0 border border-secondary/90 w-full h-[2.5rem] rounded-md"
               onChange={(e) => setDestinationWallet(e.target.value)}
             />
@@ -129,11 +145,11 @@ export function LiquidateCard() {
         <div className="rounded-lg bg-gray-400/10 p-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-white">Estimated Fee</span>
-            <span className="font-medium text-white">$0.05</span>
+            <span className="font-medium text-white">${fee.toFixed(3)}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-white">You Receive</span>
-            <span className="font-medium text-white">$8.55 USDC</span>
+            <span className="font-medium text-white">${totalAmount.toFixed(4)} USDC</span>
           </div>
           {bridgeEnabled && (
             <div className="flex items-center justify-between">
