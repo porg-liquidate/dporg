@@ -41,27 +41,33 @@ async function getMetadata(uri: string) {
     }
 }
 
-export async function fetchAssetsMetadata(connection: Connection, address: string) {
+export async function fetchTokenAssetsMetadata(connection: Connection, address: string) {
     const assets = await fetchTokenAssets(connection, address)
     const tokens = [];
-    for(const asset of assets) {
-        // get user's amount for spl token
-        const data =  await fetchAssetData(connection, asset.publicKey)
-        const metadata = await getMetadata(data?.metadata?.uri) 
-        const tokenAccount = getAssociatedTokenAddressSync(new PublicKey(asset.publicKey), new PublicKey(address))
-        const tokenInfo = await connection.getTokenAccountBalance(tokenAccount)
-        const tokenPrice = await getTokenPrice(asset.publicKey.toString())
-        const percentage = ((tokenPrice?.usdPrice - tokenPrice?.usdPrice24h) / tokenPrice?.usdPrice24h)
-        tokens.push({
-            decimals: asset.decimals,
-            mint: asset.publicKey,
-            name: data.metadata.name,
-            symbol: data.metadata.symbol,
-            image: metadata?.image ?? '',
-            balance: tokenInfo.value.uiAmount ?? 0,
-            value: tokenPrice?.usdPrice ?? 0,
-            percentage: percentage ?? 0.00
-        })
+    if (assets.length > 0) {
+        for(const asset of assets) {
+            // get user's amount for spl token
+            console.log("fetching token metadata and price")
+            const data =  await fetchAssetData(connection, asset.publicKey)
+            const metadata = await getMetadata(data?.metadata?.uri) ?? null
+            const tokenAccount = getAssociatedTokenAddressSync(new PublicKey(asset.publicKey), new PublicKey(address))
+            const tokenInfo = await connection.getTokenAccountBalance(tokenAccount)
+            const tokenPrice = await getTokenPrice(asset.publicKey.toString())
+            const percentage = tokenPrice?.usdPrice24h > 0 
+                ? ((tokenPrice?.usdPrice - tokenPrice?.usdPrice24h) / tokenPrice?.usdPrice24h)
+                : 0
+            
+            tokens.push({
+                decimals: asset.decimals,
+                mint: asset.publicKey.toString(),
+                name: data?.metadata?.name,
+                symbol: data?.metadata?.symbol,
+                image: metadata?.image ?? '',
+                balance: tokenInfo.value.uiAmount ?? 0,
+                value: tokenPrice?.usdPrice ?? 0,
+                percentage: percentage ?? 0.00
+            })
+        }
     }
     return tokens
 }

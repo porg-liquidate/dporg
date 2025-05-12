@@ -31,11 +31,11 @@ export function PortfolioOverview({
   const [view, setView] = useState("all")
 
   // calculate tokens total usd price
-  const totalPrices = portfolioTokens.reduce((sum, token) => sum + token?.value, 0)
+  const totalPrices = portfolioTokens.reduce((sum, token) => sum + token?.value, 0);
 
   // Filter tokens based on view
   const filteredTokens =
-    view === "dust" ? portfolioTokens.filter((token) => token.value < 1.0) : portfolioTokens
+    view === "dust" ? portfolioTokens.filter((token) => token.value < 1.0) : portfolioTokens;
 
   const dustValue = portfolioTokens
     .filter((token) => token.value < 1.0)
@@ -62,9 +62,7 @@ export function PortfolioOverview({
       isAllSelected = filteredTokens.length == selectedTokens.length
     }
   }, [view])
-
   
-
   return (
     <Card>
       <CardHeader>
@@ -94,19 +92,21 @@ export function PortfolioOverview({
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="flex items-center gap-x-2">
-            <label
-                htmlFor="select-all"
-                className="block text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white/70"
-            >
-                Select All
-            </label>
-            <Checkbox 
-              checked={isAllSelected}
-              onCheckedChange={handleSelectAllChange}
-              className="cursor-pointer"
-            />
-          </div>
+          {portfolioTokens.length > 0 && (
+            <div className="flex items-center gap-x-2">
+              <label
+                  htmlFor="select-all"
+                  className="block text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white/70"
+              >
+                  Select All
+              </label>
+              <Checkbox 
+                checked={isAllSelected}
+                onCheckedChange={handleSelectAllChange}
+                className="cursor-pointer"
+              />
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -117,24 +117,17 @@ export function PortfolioOverview({
             </div>
           ): (
             <>
-              {filteredTokens.length == 0 ? (
+              {portfolioTokens.length == 0 ? (
                 <div className='py-12 flex flex-col items-center gap-y-3'>
-                  {view === "dust" && filteredTokens.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <InfoIcon className="mb-2 h-10 w-10 text-white/70" />
-                      <p className="text-white/70">Dust not Found!</p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
                       <InfoIcon className="mb-2 h-10 w-10 text-white/70" />
                       <p className="text-white/70">No tokens found in portfolio!</p>
-                    </div>
-                  )}
+                  </div>
                 </div>
               ): (
                 <>
                   {filteredTokens.map((token) => (
-                    <div key={token.symbol} className="space-y-2 border-b border-white/10 pb-4 last:border-0">
+                    <div key={token.mint} className="space-y-2 border-b border-white/10 pb-4 last:border-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
@@ -149,12 +142,12 @@ export function PortfolioOverview({
                         </div>
                         <div className="flex items-center gap-x-3">
                           <div className="text-right">
-                            <p className="font-medium text-secondary">${token.value.toFixed(5)}</p>
+                            <p className="font-medium text-secondary">${token.value.toFixed(12)}</p>
                             <p className="text-xs text-white/70">{token.percentage.toFixed(3)}%</p>
                           </div>
                           <div>
                             <Checkbox 
-                              checked={isTokenSelected(token.name)}
+                              checked={isTokenSelected(token.mint)}
                               onCheckedChange={(checked) => handleSelectChange(checked, token)}
                               className="cursor-pointer"
                             />
@@ -167,6 +160,13 @@ export function PortfolioOverview({
                 </>
               )}
             </>
+          )}
+          
+          {portfolioTokens.length > 0 && view === "dust" && filteredTokens.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <InfoIcon className="mb-2 h-10 w-10 text-white/70" />
+              <p className="text-white/70">Dust not Found!</p>
+            </div>
           )}
         </div>
       </CardContent>

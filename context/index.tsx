@@ -29,7 +29,9 @@ function ContextProvider({ children, cookies }: { children: React.ReactNode, coo
 
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
     </WagmiProvider>
     )
 }

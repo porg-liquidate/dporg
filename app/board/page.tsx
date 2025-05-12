@@ -4,10 +4,12 @@ import { DashboardHeader } from "../_components/dashboard/dashboard-header"
 import { DashboardSkeleton } from "../_components/dashboard/dashboard-skeleton"
 import { LiquidateCard } from "../_components/dashboard/liquidate-card"
 import { PortfolioOverview } from "../_components/dashboard/portfolio-overview"
-import { fetchAssetsMetadata } from "@/lib/tokens"
+import { fetchTokenAssetsMetadata } from "@/lib/tokens"
 import { Connection } from "@solana/web3.js"
 import useWallet from "@/hooks/useWallet"
 import { Token } from "@/lib/types"
+import { useQuery } from "@tanstack/react-query"
+import { apiHealth } from "@/lib/api/health"
 
 export default function DashboardPage() {
   const [chain, setChain] = useState<string | null>(null)
@@ -25,12 +27,13 @@ export default function DashboardPage() {
     }
   }, [mounted, walletAddress, state])
   
-    // fetch tokens for connected chains
+  // fetch tokens for connected chains
   const fetchTokens = useCallback(() => {
     (async () => {
+      console.log(chain, address)
       if (chain == null || address == null) return
       if (chain == "solana") {
-        const assets = await fetchAssetsMetadata(connection, address)
+        const assets = await fetchTokenAssetsMetadata(connection, "3qeKeVSDbWZTtZVdzTR3qamWVvuhpcFPeStTvrQH3oFi")
         setPortfolioTokens(assets)
       } else if (chain == "ethereum") {
 
@@ -42,9 +45,11 @@ export default function DashboardPage() {
     fetchTokens()
   }, [fetchTokens])
 
-  const isTokenSelected = (name: string) => {
+  console.log(portfolioTokens)
+
+  const isTokenSelected = (mint: string) => {
     if (Array.isArray(selectedTokens)) {
-      return selectedTokens.some(token => token.name == name)
+      return selectedTokens.some(token => token.mint == mint)
     }
     return false
   };
@@ -52,14 +57,14 @@ export default function DashboardPage() {
   function handleSelectChange(checked: string | boolean, token: Token) {
     if (checked) {
       setSelectedTokens(prev => {
-        return prev.some(t => t.name == token.name) 
+        return prev.some(t => t.mint == token.mint) 
           ? prev 
           : [...prev, token] 
       })
     } else {
       setSelectedTokens(prev => {
-        if (prev.some(data => data.name == token.name)) {
-          return prev.filter(t => t.name != token.name)
+        if (prev.some(data => data.mint == token.mint)) {
+          return prev.filter(t => t.mint != token.mint)
         } else {
           return [...prev, token]
         }
@@ -91,6 +96,7 @@ export default function DashboardPage() {
 
           <div>
             <LiquidateCard 
+              chain={chain}
               selectedTokens={selectedTokens}
             />
           </div>

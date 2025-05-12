@@ -14,10 +14,11 @@ import { Token } from "@/lib/types"
 // import { useToast } from "@/hooks/use-toast"
 
 interface LiquidateCardProp {
+  chain: string | null,
   selectedTokens: Token[],
 }
 
-export function LiquidateCard({ selectedTokens }: LiquidateCardProp) {
+export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
   const [targetToken, setTargetToken] = useState("usdc")
   const [includeDust, setIncludeDust] = useState(true)
   const [bridgeEnabled, setBridgeEnabled] = useState(false)
@@ -26,6 +27,9 @@ export function LiquidateCard({ selectedTokens }: LiquidateCardProp) {
   const [isDestinationExternal, setIsDestinationExternal] = useState(false)
   const [destinationWallet, setDestinationWallet] = useState<string | null>(null)
 //   const { toast } = useToast()
+
+  const totalAmount = selectedTokens.reduce((sum, token) => sum + token?.value, 0)
+  const fee = totalAmount * 0.1
 
   const handleLiquidate = async () => {
     try {
@@ -76,7 +80,7 @@ export function LiquidateCard({ selectedTokens }: LiquidateCardProp) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="usdc">USDC</SelectItem>
-                <SelectItem value="sol">SOL</SelectItem>
+                <SelectItem value="sol">PYUSD</SelectItem>
                 <SelectItem value="usdt">USDT</SelectItem>
               </SelectContent>
             </Select>
@@ -85,7 +89,7 @@ export function LiquidateCard({ selectedTokens }: LiquidateCardProp) {
                 checked={isDestinationExternal}
                 onCheckedChange={() => setIsDestinationExternal(prev => !prev)}
               />
-              <Label className="text-white/90">Choose different destination wallet</Label>
+              <Label className="text-white/90 text-xs">Choose different destination wallet</Label>
             </div>
           </div>
         </div>
@@ -141,11 +145,11 @@ export function LiquidateCard({ selectedTokens }: LiquidateCardProp) {
         <div className="rounded-lg bg-gray-400/10 p-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-white">Estimated Fee</span>
-            <span className="font-medium text-white">$0.05</span>
+            <span className="font-medium text-white">${fee.toFixed(3)}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-white">You Receive</span>
-            <span className="font-medium text-white">$8.55 USDC</span>
+            <span className="font-medium text-white">${totalAmount.toFixed(4)} USDC</span>
           </div>
           {bridgeEnabled && (
             <div className="flex items-center justify-between">
