@@ -1,15 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 // import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Coins, InfoIcon, Wallet2 } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
-import useWallet from "@/hooks/useWallet"
-import { fetchAssetsMetadata } from "@/lib/tokens"
-import { Connection } from "@solana/web3.js"
 import { Token } from "@/lib/types"
 
 interface PortfolioOverviewProp {
@@ -122,8 +119,17 @@ export function PortfolioOverview({
             <>
               {filteredTokens.length == 0 ? (
                 <div className='py-12 flex flex-col items-center gap-y-3'>
-                  <Coins className='stroke-white/70 w-12 h-12' />
-                  <h3 className='text-white/90 text-center'>You do not have any tokens in your portfolio</h3>
+                  {view === "dust" && filteredTokens.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <InfoIcon className="mb-2 h-10 w-10 text-white/70" />
+                      <p className="text-white/70">Dust not Found!</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <InfoIcon className="mb-2 h-10 w-10 text-white/70" />
+                      <p className="text-white/70">No tokens found in portfolio!</p>
+                    </div>
+                  )}
                 </div>
               ): (
                 <>
@@ -163,13 +169,6 @@ export function PortfolioOverview({
             </>
           )}
         </div>
-
-        {view === "dust" && filteredTokens.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <InfoIcon className="mb-2 h-10 w-10 text-white/70" />
-            <p className="text-white/70">Dust not Found!</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   )
