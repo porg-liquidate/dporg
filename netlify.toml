@@ -1,6 +1,7 @@
 [build]
-  command = "npm run build"
-  publish = "out" # or ".next" if using static export
+  command = "npm run build" # This will run both next build and next export
+  publish = "out"
+  functions = "out/functions" # Only if using API routes
 
 [[redirects]]
   from = "/*"
