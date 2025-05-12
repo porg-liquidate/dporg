@@ -56,6 +56,9 @@ export function PortfolioOverview() {
     fetchTokens()
   }, [fetchTokens])
 
+  // calculate tokens total usd price
+  const totalPrices = portfolioTokens.reduce((sum, token) => sum + token?.value, 0)
+
   // Filter tokens based on view
   const filteredTokens =
     view === "dust" ? portfolioTokens.filter((token) => token.value < 1.0) : portfolioTokens
@@ -119,7 +122,7 @@ export function PortfolioOverview() {
             <CardDescription>Your current token balances</CardDescription>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-white/70">$87.9</p>
+            <p className="text-2xl font-bold text-white/70">${totalPrices.toFixed(4)}</p>
             <p className="text-sm text-white/70">Total Value</p>
           </div>
         </div>

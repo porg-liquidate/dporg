@@ -30,14 +30,10 @@ async function fetchAssetData(connection: Connection, address: string) {
 }
 
 async function getMetadata(uri: string) {
-    try {
-        if (uri != undefined) {
-            const response = await fetch(uri);
-            const data = await response.json();
-            return data
-        }
-    } catch(error) {
-        console.log(error, 'uri')
+    if (uri != undefined) {
+        const response = await fetch(uri);
+        const data = await response.json();
+        return data
     }
 }
 
