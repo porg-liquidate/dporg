@@ -23,17 +23,24 @@ export function LiquidateCard() {
 //   const { toast } = useToast()
 
   const handleLiquidate = async () => {
-    setIsLoading(true)
+    try {
+      setIsLoading(true)
 
-    // Simulate transaction processing
-    setTimeout(() => {
+      // Simulate transaction processing
+      setTimeout(() => {
+        setIsLoading(false)
+        // toast({
+        //   title: "Liquidation Successful",
+        //   description: "All tokens have been converted to USDC",
+        //   duration: 5000,
+        // })
+      }, 2000)
+
+    } catch(error) {
+
+    } finally {
       setIsLoading(false)
-    //   toast({
-    //     title: "Liquidation Successful",
-    //     description: "All tokens have been converted to USDC",
-    //     duration: 5000,
-    //   })
-    }, 2000)
+    }
   }
 
   return (
@@ -84,7 +91,7 @@ export function LiquidateCard() {
               type='text' 
               name='desination-wallet'
               value={destinationWallet ?? ''}
-              placeholder='0x38339...YHh3738j'
+              placeholder='solana address'
               className="text-white/90 px-3 focus:outline-0 border border-secondary/90 w-full h-[2.5rem] rounded-md"
               onChange={(e) => setDestinationWallet(e.target.value)}
             />
