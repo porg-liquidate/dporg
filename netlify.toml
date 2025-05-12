@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "out" # or ".next" if using static export
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "18" # Match your local Node version
