@@ -12,8 +12,40 @@ import { Token } from "@/lib/types"
 export default function DashboardPage() {
   const [chain, setChain] = useState<string | null>(null)
   const [address, setAddress] = useState<string | null>(null)
-  const [portfolioTokens, setPortfolioTokens] = useState<Token[]>([])
-  const [selectedTokens, setSelectedTokens] = useState<Token[]>([]);
+  const [portfolioTokens, setPortfolioTokens] = useState<Token[]>([
+    {
+      name: 'dporg',
+      symbol: 'DPORG',
+      value: 2823.3,
+      balance: 223,
+      image: 'https://pinterest.png',
+      decimals: 9,
+      mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+      percentage: 11.2
+    },
+    {
+      name: 'dporg2',
+      symbol: 'DPORG2',
+      value: 13333.3,
+      balance: 1323,
+      image: 'https://pinterest.png',
+      decimals: 8,
+      mint: 'GNRt1ugoSxoDtzvyZxE5EcELBG3AZ1EuSV6qaPKxcLqC',
+      percentage: 10.2
+    }
+  ])
+  const [selectedTokens, setSelectedTokens] = useState<Token[]>([
+    {
+      name: 'dporg',
+      symbol: 'DPORG',
+      value: 2823.3,
+      balance: 223,
+      image: 'https://pinterest.png',
+      decimals: 9,
+      mint: 'A95NN3DpRrZuFkAtvNZvy91HcoqofvRFVWvuNhQDpump',
+      percentage: 11.2
+    }
+  ]);
 
   const {address: walletAddress, state, mounted} = useWallet()
   const connection = new Connection(process.env.NEXT_PUBLIC_HELIUS_RPC as string);
@@ -50,11 +82,11 @@ export default function DashboardPage() {
     return false
   };
 
-  useEffect(() => {
-    if (portfolioTokens.length == 0) {
-      setSelectedTokens([])
-    }
-  }, [portfolioTokens])
+  // useEffect(() => {
+  //   if (portfolioTokens.length == 0) {
+  //     setSelectedTokens([])
+  //   }
+  // }, [portfolioTokens])
 
   function handleSelectChange(checked: string | boolean, token: Token) {
     if (checked) {
@@ -98,6 +130,7 @@ export default function DashboardPage() {
 
           <div>
             <LiquidateCard 
+              walletAddress={"AxiomNsSrf4gvzTjf5SNw4HrViNMAPLJdhzLEgBKaNtj"}
               chain={chain}
               selectedTokens={selectedTokens}
             />

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { headers } from 'next/headers' 
 import ContextProvider from "@/context";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Porg",
@@ -17,10 +18,13 @@ export default async function RootLayout({
   const cookies = headersData.get('cookie');
 
   return (
-    <html lang="en" data-nighteye="disabled">
-      <body>
-        <ContextProvider cookies={cookies}>{children}</ContextProvider>
-      </body>
-    </html>
+    <>
+      <Toaster position="bottom-right" />
+      <html lang="en" data-nighteye="disabled">
+        <body>
+          <ContextProvider cookies={cookies}>{children}</ContextProvider>
+        </body>
+      </html>
+    </>
   );
 }

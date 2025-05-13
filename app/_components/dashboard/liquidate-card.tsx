@@ -11,24 +11,40 @@ import { ArrowRightLeft, ExternalLink, HelpCircle, Zap } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Chain, Token } from "@/lib/types"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { getSupportedChains } from "@/lib/api/wormhole"
-// import { useToast } from "@/hooks/use-toast"
+import { toast } from 'react-hot-toast'
+import { batchSwap, BatchSwapParam } from "@/lib/api/jupiter"
+import { MutableRequestCookiesAdapter } from "next/dist/server/web/spec-extension/adapters/request-cookies"
 
 interface LiquidateCardProp {
   chain: string | null,
+  walletAddress: string | null,
   selectedTokens: Token[],
 }
 
-export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
-  const [targetToken, setTargetToken] = useState("usdc")
+export function LiquidateCard({ walletAddress, chain, selectedTokens }: LiquidateCardProp) {
+  const [targetToken, setTargetToken] = useState<string>("usdc")
   const [includeDust, setIncludeDust] = useState(true)
   const [bridgeEnabled, setBridgeEnabled] = useState(false)
   const [targetChain, setTargetChain] = useState("ethereum")
   const [isLoading, setIsLoading] = useState(false)
   const [isDestinationExternal, setIsDestinationExternal] = useState(false)
   const [destinationWallet, setDestinationWallet] = useState<string | null>(null)
-//   const { toast } = useToast()
+  const [targetTokensData] = useState([
+    {
+      name: "usdt",
+      mint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+    },
+    {
+      name: "usdc",
+      mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    },
+    {
+      name: 'pyusdc',
+      mint: "EDBM1GyjydH3ohC4q3WgWe1XS8T8bjukPd3aBPjk32GS" 
+    }
+  ])
 
   const totalAmount = selectedTokens.reduce((sum, token) => sum + token?.value, 0)
   const fee = totalAmount * 0.1
@@ -41,35 +57,46 @@ export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
     queryFn: () => getSupportedChains()
   })
 
-  const {
-    data: bridgeFeeData,
-    isLoading: isBridgeFeeLoading
-  } = useQuery<any>({
-    queryKey: ['fee', ]
-  })
+  const mutation = useMutation({
+    mutationFn: async (swapParam: BatchSwapParam) => {
+      return await batchSwap(swapParam)
+    }
+  });
 
   const handleLiquidate = async () => {
+    setIsLoading(true)
+
     try {
-      setIsLoading(true)
 
-      if (bridgeEnabled) {
+      if (!walletAddress || !chain) 
+        return toast.error('Wallet address or chain not provided')
 
+      if (selectedTokens.length  == 0)
+        return toast.error('select tokens to liquidate')
+
+      // get all selected token mints and target mint
+      const mints = selectedTokens.map(token => token.mint)
+      const targetIndex: any = targetTokensData.findIndex(tt => tt.name == 'usdc')
+      
+      mutation.mutate({
+        walletAddress,
+        tokenMints: mints,
+        targetMint: targetTokensData[targetIndex].mint,
+        slippageBps: 10
+      })
+
+      if (mutation?.data == undefined) {
+        return toast.error('Could not process liquidation');
       }
 
-      // Simulate transaction processing
-      setTimeout(() => {
-        setIsLoading(false)
-        // toast({
-        //   title: "Liquidation Successful",
-        //   description: "All tokens have been converted to USDC",
-        //   duration: 5000,
-        // })
-      }, 2000)
+      if (mutation?.data != undefined && mutation?.data?.error == "Failed to create batch swap transaction") {
+        return toast.error(mutation?.data.error)
+      }
 
     } catch(error) {
 
     } finally {
-      setIsLoading(false)
+      setTimeout(() => setIsLoading(false), 1000)
     }
   }
 
@@ -189,7 +216,7 @@ export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
         <Button
           onClick={handleLiquidate}
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 cursor-pointer"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
