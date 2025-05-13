@@ -8,3 +8,10 @@ export type Token = {
   decimals: number,
   percentage: number,
 }
+
+export type Chain = {
+  id: string,
+  name: string,
+  chainId: number,
+  logo: string
+}

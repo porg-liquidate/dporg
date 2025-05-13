@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Key, useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -10,7 +10,9 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowRightLeft, ExternalLink, HelpCircle, Zap } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Token } from "@/lib/types"
+import { Chain, Token } from "@/lib/types"
+import { useQuery } from "@tanstack/react-query"
+import { getSupportedChains } from "@/lib/api/wormhole"
 // import { useToast } from "@/hooks/use-toast"
 
 interface LiquidateCardProp {
@@ -31,9 +33,28 @@ export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
   const totalAmount = selectedTokens.reduce((sum, token) => sum + token?.value, 0)
   const fee = totalAmount * 0.1
 
+  const {
+    data: supportedChainsData,
+    isLoading: isSupportedChainsLoading
+  } = useQuery<any>({
+    queryKey: ['supported-chains'],
+    queryFn: () => getSupportedChains()
+  })
+
+  const {
+    data: bridgeFeeData,
+    isLoading: isBridgeFeeLoading
+  } = useQuery<any>({
+    queryKey: ['fee', ]
+  })
+
   const handleLiquidate = async () => {
     try {
       setIsLoading(true)
+
+      if (bridgeEnabled) {
+
+      }
 
       // Simulate transaction processing
       setTimeout(() => {
@@ -128,17 +149,22 @@ export function LiquidateCard({ chain, selectedTokens }: LiquidateCardProp) {
         {bridgeEnabled && (
           <div className="space-y-2 pt-2">
             <Label htmlFor="target-chain">Target Chain</Label>
-            <Select value={targetChain} onValueChange={setTargetChain}>
-              <SelectTrigger id="target-chain" className="border border-secondary/10 text-secondary">
-                <SelectValue placeholder="Select chain" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ethereum">Ethereum</SelectItem>
-                <SelectItem value="polygon">Polygon</SelectItem>
-                <SelectItem value="arbitrum">Arbitrum</SelectItem>
-                <SelectItem value="optimism">Optimism</SelectItem>
-              </SelectContent>
-            </Select>
+            {isSupportedChainsLoading ? (
+              <div>
+                span  
+              </div>
+            ) : (
+              <Select value={targetChain} onValueChange={setTargetChain} defaultValue={supportedChainsData[0].name}>
+                <SelectTrigger id="target-chain" className="border border-secondary/10 text-secondary">
+                  <SelectValue placeholder="Select chain" />
+                </SelectTrigger>
+                <SelectContent>
+                  {supportedChainsData.length > 0 && supportedChainsData.map((chain: Chain) => (
+                    <SelectItem key={chain.chainId} value={chain.id}>{chain.name}</SelectItem>  
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         )}
 
